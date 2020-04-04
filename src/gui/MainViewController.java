@@ -56,9 +56,9 @@ public class MainViewController implements Initializable{
 
 	// synchronized -> para que todo o processo seja executado sem interrupção durante multi-thread
 	// loadView é um método genérico com uma interface funcional (Consumer<T>) para trabalhar com expressões lambda
-	private synchronized <T> void loadView(String absoluteView, Consumer<T> initializinAction) {
+	private synchronized <T> void loadView(String absoluteName, Consumer<T> initializinAction) {
 		try {
-			FXMLLoader loader = new FXMLLoader(getClass().getResource(absoluteView));
+			FXMLLoader loader = new FXMLLoader(getClass().getResource(absoluteName));
 			VBox newVBox = loader.load();
 			
 			// Pega referência do painel principal (referência para cena)
