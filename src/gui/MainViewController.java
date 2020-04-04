@@ -15,6 +15,7 @@ import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.layout.VBox;
+import model.services.DepartmentService;
 
 public class MainViewController implements Initializable{
 
@@ -34,7 +35,7 @@ public class MainViewController implements Initializable{
 	
 	@FXML
 	public void onMenuItemDepartemtnAction() {
-		loadView("/gui/DepartmentList.fxml");
+		loadView2("/gui/DepartmentList.fxml");
 	}
 	
 	@FXML
@@ -80,6 +81,47 @@ public class MainViewController implements Initializable{
 			
 			/*Adicionando uma coleção de filhos ao mainVBox*/
 			mainVBox.getChildren().addAll(newVBox.getChildren());
+		}
+		catch(IOException e) {
+			Alerts.showAlert("IO Exception", "Error loading view", e.getMessage(), AlertType.ERROR);
+		}
+	}
+	
+	private synchronized void loadView2(String absoluteView) {
+		try {
+			FXMLLoader loader = new FXMLLoader(getClass().getResource(absoluteView));
+			VBox newVBox = loader.load();
+			
+			// Pega referência do painel principal (referência para cena)
+			Scene mainScene = Main.getMainScene();
+			
+			// Pega referência do VBox do painel principal
+			/*
+			 ** getRoot() --> pega o primeiro elemnto na referência do painel principal que é um scrollPane
+			 ** ((ScrollPane)mainScene.getRoot()) é uma referência para o ScrollPane
+			 ** getContent() --> pega o content dentro do ScrollPane que já é uma referência para o VBox
+			 ** dentro do ScrollPane
+			 */
+			VBox mainVBox = (VBox)((ScrollPane)mainScene.getRoot()).getContent();
+			
+			/*
+			 * getChildren().get(0) --> pega o filho do VBox na posição 0 (zero) (a barra de menu)
+			*/
+			Node mainMenu = mainVBox.getChildren().get(0);
+			
+			/*Limpa todos os filhos do mainVBox*/
+			mainVBox.getChildren().clear();
+			
+			/*Adicionando filhos ao mainVBox*/
+			mainVBox.getChildren().add(mainMenu);
+			
+			/*Adicionando uma coleção de filhos ao mainVBox*/
+			mainVBox.getChildren().addAll(newVBox.getChildren());
+			
+			// loader.getController() -> acessa o cotroller da view do Department
+			DepartmentListController controller = loader.getController();
+			controller.setDepartmentService(new DepartmentService());
+			controller.updateTableView();
 		}
 		catch(IOException e) {
 			Alerts.showAlert("IO Exception", "Error loading view", e.getMessage(), AlertType.ERROR);
